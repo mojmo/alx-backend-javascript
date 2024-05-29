@@ -7,7 +7,7 @@ export default function handleProfileSignup(firstName, lastName, fileName) {
     .then((response) => (
       response.map((result) => ({
         status: result.status,
-        value: String(result.reason) || result.value, // Use reason for rejection, value for success
+        value: result.status === 'fulfilled' ? result.value : result.reason.toString(), // Use reason for rejection, value for success
       }))
     ));
 }
