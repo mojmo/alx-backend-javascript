@@ -11,6 +11,6 @@ export default async function asyncUploadUser(firstName, lastName, fileName) {
       user: userPromise,
     };
   } catch (err) {
-    return {};
+    return { photo: null, user: null };
   }
 }
