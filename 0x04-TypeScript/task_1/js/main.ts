@@ -6,3 +6,7 @@ interface Teacher {
     yearsOfExperience?: number;
     [key: string]: any;
 }
+
+interface Director extends Teacher {
+    numberOfReports: number;
+}
