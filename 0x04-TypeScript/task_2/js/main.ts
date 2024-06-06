@@ -64,3 +64,17 @@ function executeWork(employee: Director | Teacher) {
         return employee.workTeacherTasks();
     }
 }
+
+// String literal type for subjects
+type Subjects = "Math" | "History";
+
+// Function to teach based on subject
+function teachClass(todayClass: Subjects): string {
+
+    switch (todayClass) {
+        case "Math":
+            return "Teaching Math";
+        case "History":
+            return "Teaching History";
+    }
+}
