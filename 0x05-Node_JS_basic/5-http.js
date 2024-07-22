@@ -24,7 +24,7 @@ function countStudents(path) {
       for (const [field, { count, list }] of Object.entries(fields)) {
         response += `Number of students in ${field}: ${count}. List: ${list.join(', ')}\n`;
       }
-      return response;
+      return response.trim();
     })
     .catch(() => {
       throw new Error('Cannot load the database');
