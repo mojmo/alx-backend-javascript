@@ -9,22 +9,29 @@ function countStudents(path) {
     .then((data) => {
       const lines = data.split('\n').filter((line) => line.trim() !== '');
       const fields = {};
-
-      lines.forEach((line, index) => {
-        if (index === 0) return;
-        const [firstname, , , field] = line.split(',');
-        if (!fields[field]) {
-          fields[field] = { count: 0, list: [] };
+      const header = lines[0].split(',');
+      const idxFn = header.findIndex((ele) => ele === 'firstname');
+      const idxFd = header.findIndex((ele) => ele === 'field');
+      
+      lines.slice(1).forEach((line) => {
+        const list = line.split(',');
+        if (!fields[list[idxFd]]) {
+          fields[list[idxFd]] = { count: 0, list: [] };
         }
-        fields[field].count += 1;
-        fields[field].list.push(firstname);
+        fields[list[idxFd]].count += 1;
+        fields[list[idxFd]].list.push(list[idxFn]);
       });
 
-      let response = `Number of students: ${lines.length - 1}\n`;
+      const all = {
+        numberStudents: `Number of students: ${lines.length - 1}\n`,
+        listStudents: [],
+      };
+
       for (const [field, { count, list }] of Object.entries(fields)) {
-        response += `Number of students in ${field}: ${count}. List: ${list.join(', ')}\n`;
+        all.listStudents.push(`Number of students in ${field}: ${count}. List: ${list.join(', ')}`);
       }
-      return response.trim();
+
+      return all;
     })
     .catch(() => {
       throw new Error('Cannot load the database');
@@ -47,7 +54,10 @@ const app = http.createServer((req, res) => {
 
     countStudents(databasePath)
       .then((data) => {
-        res.end(`This is the list of our students\n${data}`);
+        res.write('This is the list of our students\n');
+        res.write(data.numberStudents);
+        res.write(data.listStudents.join('\n'));
+        res.end();
       })
       .catch(() => {
         res.statusCode = 500;
