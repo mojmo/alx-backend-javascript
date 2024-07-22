@@ -1,11 +1,11 @@
-import { readDatabase } from '../utils.js';
+import { readDatabase } from '../utils';
 
 class StudentsController {
   static async getAllStudents(req, res) {
     try {
       const studentsByField = await readDatabase(process.argv[2]);
       let response = 'This is the list of our students\n';
-      Object.keys(studentsByField).sort().forEach(field => {
+      Object.keys(studentsByField).sort().forEach((field) => {
         response += `Number of students in ${field}: ${studentsByField[field].length}. List: ${studentsByField[field].join(', ')}\n`;
       });
       res.status(200).send(response.trim());
@@ -15,16 +15,16 @@ class StudentsController {
   }
 
   static async getAllStudentsByMajor(req, res) {
-    const major = req.params.major;
+    const { major } = req.params;
     if (major !== 'CS' && major !== 'SWE') {
       return res.status(500).send('Major parameter must be CS or SWE');
     }
     try {
       const studentsByField = await readDatabase(process.argv[2]);
       const students = studentsByField[major] || [];
-      res.status(200).send(`List: ${students.join(', ')}`);
+      return res.status(200).send(`List: ${students.join(', ')}`);
     } catch (error) {
-      res.status(500).send(error.message);
+      return res.status(500).send(error.message);
     }
   }
 }
