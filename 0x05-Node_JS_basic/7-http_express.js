@@ -1,34 +1,39 @@
 const express = require('express');
-const fs = require('fs').promises;
+const { readFile } = require('fs').promises;
 
 const app = express();
 const port = 1245;
 
-function countStudents(path) {
-  return fs.readFile(path, 'utf8')
-    .then((data) => {
-      const lines = data.split('\n').filter((line) => line.trim() !== '');
-      const fields = {};
+function countStudents(filePath) {
+  return new Promise((resolve, reject) => {
+    readFile(filePath, 'utf8')
+      .then((data) => {
+        const rows = data.split('\n').filter((row) => row.trim() !== '');
+        const fieldData = {};
+        let studentCount = 0;
 
-      lines.forEach((line, index) => {
-        if (index === 0) return;
-        const [firstname, , , field] = line.split(',');
-        if (!fields[field]) {
-          fields[field] = { count: 0, list: [] };
+        rows.slice(1).forEach((row) => {
+          const columns = row.split(',');
+          const firstName = columns[0];
+          const field = columns[3];
+          studentCount += 1;
+          if (!fieldData[field]) {
+            fieldData[field] = { count: 0, list: [] };
+          }
+          fieldData[field].count += 1;
+          fieldData[field].list.push(firstName);
+        });
+
+        let result = `Number of students: ${studentCount}\n`;
+        for (const [field, { count, list }] of Object.entries(fieldData)) {
+          result += `Number of students in ${field}: ${count}. List: ${list.join(', ')}\n`;
         }
-        fields[field].count += 1;
-        fields[field].list.push(firstname);
+        resolve(result.trim());
+      })
+      .catch(() => {
+        reject(new Error('Cannot load the database'));
       });
-
-      let response = `Number of students: ${lines.length - 1}\n`;
-      for (const [field, { count, list }] of Object.entries(fields)) {
-        response += `Number of students in ${field}: ${count}. List: ${list.join(', ')}\n`;
-      }
-      return response.trim();
-    })
-    .catch(() => {
-      throw new Error('Cannot load the database');
-    });
+  });
 }
 
 app.get('/', (req, res) => {
