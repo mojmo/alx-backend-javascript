@@ -5,8 +5,8 @@ const readFileAsync = promisify(fs.readFile);
 
 export function readDatabase(filePath) {
   return readFileAsync(filePath, 'utf8')
-    .then(data => {
-      const lines = data.split('\n').filter(line => line.trim() !== '');
+    .then((data) => {
+      const lines = data.split('\n').filter((line) => line.trim() !== '');
       const studentsByField = {};
 
       lines.forEach((line, index) => {
@@ -20,7 +20,9 @@ export function readDatabase(filePath) {
 
       return studentsByField;
     })
-    .catch(err => {
+    .catch(() => {
       throw new Error('Cannot load the database');
     });
 }
+
+export default readDatabase;
