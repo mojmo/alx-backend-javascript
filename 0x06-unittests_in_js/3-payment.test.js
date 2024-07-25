@@ -1,4 +1,4 @@
-// 3-payment.test.js
+
 const sinon = require('sinon');
 const { expect } = require('chai');
 const Utils = require('./utils');
